@@ -1,3 +1,4 @@
+import { App as CapacitorApp } from "@capacitor/app";
 import { useCallback, useEffect, useState } from "react";
 import { Disclaimer } from "./components/Disclaimer";
 import { DrawControls } from "./components/DrawControls";
@@ -13,6 +14,7 @@ import {
 import { useDrawMachine } from "./hooks/useDrawMachine";
 import { useHistory } from "./hooks/useHistory";
 import { usePreferences } from "./hooks/usePreferences";
+import { installAndroidBackHandler } from "./services/androidBack";
 import { drawAudio } from "./services/audio";
 
 async function copyText(text: string): Promise<boolean> {
@@ -71,6 +73,15 @@ export default function App() {
   useEffect(() => {
     reset();
   }, [game, reset]);
+
+  useEffect(
+    () =>
+      installAndroidBackHandler(CapacitorApp, {
+        isHistoryOpen: () => historyOpen,
+        closeHistory: () => setHistoryOpen(false),
+      }),
+    [historyOpen],
+  );
 
   useEffect(() => {
     if (!copyMessage) {
