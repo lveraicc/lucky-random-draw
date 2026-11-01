@@ -157,18 +157,15 @@ export function useDrawMachine({
       });
 
       if (reduceMotion) {
-        const fastTimer = window.setTimeout(() => {
-          updateState({
-            phase: "complete",
-            result,
-            revealedCount: reelCount,
-            reelCount,
-            error: null,
-          });
-          safeAudio(() => audio.lock());
-          onCompleteRef.current(result);
-        }, timing.reducedMotionMs);
-        timersRef.current.push(fastTimer);
+        updateState({
+          phase: "complete",
+          result,
+          revealedCount: reelCount,
+          reelCount,
+          error: null,
+        });
+        safeAudio(() => audio.lock());
+        onCompleteRef.current(result);
         return;
       }
 
