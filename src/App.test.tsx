@@ -42,6 +42,13 @@ describe("App", () => {
   it("switches to Super Lotto when idle", async () => {
     render(<App />);
 
+    expect(
+      screen.getByRole("heading", { name: "随机一注" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("随机模拟 · 仅供娱乐，不代表官方开奖"),
+    ).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "大乐透" }));
 
     expect(screen.getByText("前区")).toBeInTheDocument();
