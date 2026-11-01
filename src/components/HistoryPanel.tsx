@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { GAME_CONFIG, type LotteryResult } from "../domain/lottery";
 
 interface HistoryPanelProps {
@@ -80,7 +81,8 @@ export function HistoryPanel({
         )}
       </section>
 
-      {open ? (
+      {open
+        ? createPortal(
         <div className="history-overlay" onMouseDown={onClose}>
           <section
             className="history-drawer"
@@ -131,8 +133,10 @@ export function HistoryPanel({
               清空本地记录
             </button>
           </section>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+        : null}
     </>
   );
 }

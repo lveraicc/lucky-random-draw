@@ -82,6 +82,29 @@ test("reduced motion reaches the locked result quickly", async ({ page }) => {
   });
 });
 
+test("the history drawer stays above the app header", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("start-draw").click();
+  await expect(page.locator('[data-phase="complete"]')).toBeVisible({
+    timeout: 5000,
+  });
+  await page.getByRole("button", { name: /查看全部/ }).click();
+
+  const closeButton = page.getByRole("button", { name: "关闭历史记录" });
+  const box = await closeButton.boundingBox();
+  if (!box) {
+    throw new Error("Close button has no bounding box");
+  }
+  const topElementIsInDrawer = await page.evaluate(
+    ({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest(".history-drawer")),
+    { x: box.x + box.width / 2, y: box.y + box.height / 2 },
+  );
+
+  expect(topElementIsInDrawer).toBe(true);
+  await closeButton.click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
 test("Space starts a draw from the focused primary action", async ({
   page,
 }) => {
