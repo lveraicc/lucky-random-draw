@@ -56,6 +56,12 @@ test("the page fits desktop and mobile without horizontal scrolling", async ({
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(
     dimensions.clientWidth + 1,
   );
+  const reelWidths = await page
+    .getByTestId("number-reel")
+    .evaluateAll((reels) =>
+      reels.map((reel) => reel.getBoundingClientRect().width),
+    );
+  expect(reelWidths.at(-1)).toBeGreaterThanOrEqual(24);
   await expect(page.getByTestId("start-draw")).toBeVisible();
   await expect(page.getByTestId("number-reel").last()).toBeInViewport();
   await expect(

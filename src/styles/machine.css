@@ -185,7 +185,6 @@
   .machine__lights { display: none; }
   .machine__labels { padding-inline: 9px; }
   .machine__reels { gap: 3px; padding: 8px 6px; }
-  .machine__divider { display: none; }
   .reel { border-width: 1px; border-radius: 5px; }
   .reel__glass { inset: 3px; }
   .reel__value { font-size: 16px; }
