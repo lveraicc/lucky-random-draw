@@ -35,3 +35,22 @@ npm run e2e
 手机打开该地址即可使用。iPhone 可在 Safari 中通过“分享 → 添加到主屏幕”创建快捷入口；Android Chrome 可通过菜单中的“添加到主屏幕”完成相同操作。
 
 也可以运行 `npm run build`，将 `dist/` 部署到任意静态托管平台。
+
+## Android APK
+
+安装包：`随机一注-1.0.0.apk`
+
+- 支持 Android 7 及以上。
+- 应用无需联网即可使用。
+- 安装时 Android 可能要求允许当前文件管理器或聊天应用“安装未知应用”。
+- 更新版本必须继续使用相同的包名和签名密钥。
+
+本地构建：
+
+```bash
+npx cap sync android
+cd android
+./gradlew assembleRelease
+```
+
+Release 签名配置保存在本机，不会提交到仓库。
