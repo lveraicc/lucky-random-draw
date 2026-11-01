@@ -28,4 +28,10 @@ npm run e2e
 
 ## 部署
 
-运行 `npm run build` 后，将 `dist/` 部署到任意静态托管平台。托管平台需将未匹配路径回退到 `index.html`。
+推送到 `master` 后，GitHub Actions 会自动构建并发布到 GitHub Pages：
+
+<https://lveraicc.github.io/lucky-random-draw/>
+
+手机打开该地址即可使用。iPhone 可在 Safari 中通过“分享 → 添加到主屏幕”创建快捷入口；Android Chrome 可通过菜单中的“添加到主屏幕”完成相同操作。
+
+也可以运行 `npm run build`，将 `dist/` 部署到任意静态托管平台。
