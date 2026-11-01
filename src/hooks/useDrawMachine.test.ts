@@ -134,4 +134,37 @@ describe("useDrawMachine", () => {
     expect(result.current.result).toBeNull();
     expect(result.current.error).toBe("当前浏览器不支持安全随机数");
   });
+
+  it("continues the draw when audio playback is blocked", () => {
+    const blockedAudio: DrawAudioController = {
+      start: vi.fn(() => {
+        throw new Error("Audio blocked");
+      }),
+      tick: vi.fn(() => {
+        throw new Error("Audio blocked");
+      }),
+      lock: vi.fn(() => {
+        throw new Error("Audio blocked");
+      }),
+      stop: vi.fn(() => {
+        throw new Error("Audio blocked");
+      }),
+    };
+    const onComplete = vi.fn();
+    const { result } = renderHook(() =>
+      useDrawMachine({
+        soundEnabled: true,
+        reduceMotion: false,
+        onComplete,
+        audio: blockedAudio,
+      }),
+    );
+
+    act(() => result.current.startDraw("ssq"));
+    expect(result.current.phase).toBe("drawing");
+    act(() => vi.advanceTimersByTime(3200));
+
+    expect(result.current.phase).toBe("complete");
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 });

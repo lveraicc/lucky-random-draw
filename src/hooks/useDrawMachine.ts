@@ -81,6 +81,14 @@ export function useDrawMachine({
     timersRef.current = [];
   }, []);
 
+  const safeAudio = useCallback((operation: () => void) => {
+    try {
+      operation();
+    } catch {
+      // Audio is decorative; blocked playback must never interrupt the draw.
+    }
+  }, []);
+
   const finish = useCallback(() => {
     if (stateRef.current.phase === "complete") {
       return;
@@ -92,22 +100,22 @@ export function useDrawMachine({
     }
 
     clearTimers();
-    audio.stop();
-    audio.lock();
+    safeAudio(() => audio.stop());
     updateState({
       ...stateRef.current,
       phase: "complete",
       revealedCount: stateRef.current.reelCount,
     });
+    safeAudio(() => audio.lock());
     onCompleteRef.current(lockedResult);
-  }, [audio, clearTimers, updateState]);
+  }, [audio, clearTimers, safeAudio, updateState]);
 
   const reset = useCallback(() => {
     clearTimers();
-    audio.stop();
+    safeAudio(() => audio.stop());
     resultRef.current = null;
     updateState(INITIAL_STATE);
-  }, [audio, clearTimers, updateState]);
+  }, [audio, clearTimers, safeAudio, updateState]);
 
   const startDraw = useCallback(
     (game: GameId) => {
@@ -119,7 +127,7 @@ export function useDrawMachine({
       }
 
       clearTimers();
-      audio.stop();
+      safeAudio(() => audio.stop());
       resultRef.current = null;
 
       let result: LotteryResult;
@@ -150,7 +158,6 @@ export function useDrawMachine({
 
       if (reduceMotion) {
         const fastTimer = window.setTimeout(() => {
-          audio.lock();
           updateState({
             phase: "complete",
             result,
@@ -158,6 +165,7 @@ export function useDrawMachine({
             reelCount,
             error: null,
           });
+          safeAudio(() => audio.lock());
           onCompleteRef.current(result);
         }, timing.reducedMotionMs);
         timersRef.current.push(fastTimer);
@@ -165,7 +173,7 @@ export function useDrawMachine({
       }
 
       if (soundEnabled) {
-        audio.start();
+        safeAudio(() => audio.start());
       }
 
       let nextStopTime = timing.revealStartMs;
@@ -183,7 +191,7 @@ export function useDrawMachine({
           });
 
           if (soundEnabled) {
-            audio.tick((index + 1) / reelCount);
+            safeAudio(() => audio.tick((index + 1) / reelCount));
           }
         }, nextStopTime);
         timersRef.current.push(revealTimer);
@@ -201,6 +209,7 @@ export function useDrawMachine({
       draw,
       finish,
       reduceMotion,
+      safeAudio,
       soundEnabled,
       timing.finishTailMs,
       timing.reducedMotionMs,
@@ -226,9 +235,9 @@ export function useDrawMachine({
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       clearTimers();
-      audio.stop();
+      safeAudio(() => audio.stop());
     };
-  }, [audio, clearTimers, finish]);
+  }, [audio, clearTimers, finish, safeAudio]);
 
   return {
     ...state,
